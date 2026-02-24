@@ -65,7 +65,7 @@ Não é necessário instalar dependências.
 - Operadores bitwise (`>>` e `&`)
 - Animações com `@keyframes`
 - Eventos de clique
-- 
+  
 # ✨ Melhorias Futuras
 
 - Versão mobile otimizada
