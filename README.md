@@ -54,6 +54,7 @@ Ao final das 6 perguntas, a soma revela exatamente o número escolhido.
 
 1. Baixe o arquivo do projeto
 2. Abra o arquivo `index.html` no navegador
+3. git clone https://github.com/seuusuario/seurepositorio.git
 
 Não é necessário instalar dependências.
 
