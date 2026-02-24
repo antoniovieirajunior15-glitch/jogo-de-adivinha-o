@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Jogo da Adivinhação Mágico</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    min-height: 100vh;
+    transition: 0.5s;
+}
+
+h1 {
+    margin-top: 40px;
+    font-size: 2.5em;
+    animation: fadeIn 1s ease-in-out;
+}
+
+button {
+    padding: 12px 20px;
+    margin: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.08);
+}
+
+.start { background: #00c9a7; color: white; }
+.sim { background-color: #00c853; color: white; }
+.nao { background-color: #d50000; color: white; }
+.reset { background-color: #ff9800; color: white; }
+
+.cartela {
+    display: none;
+    margin-top: 20px;
+    padding: 25px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    width: 360px;
+    animation: slideUp 0.5s ease forwards;
+}
+
+.numeros {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin: 15px 0;
+}
+
+.numeros div {
+    background: rgba(255,255,255,0.2);
+    padding: 8px;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+
+.numeros div:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+#resultado {
+    font-size: 32px;
+    margin-top: 30px;
+    font-weight: bold;
+    min-height: 50px;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes slideUp {
+    from {transform: translateY(30px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+
+.magic {
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px #fff; }
+    to { text-shadow: 0 0 20px #ffd700; }
+}
+</style>
+</head>
+<body>
+
+<h1>🎩 Jogo da Adivinhação Mágico</h1>
+<p>Pense em um número de 1 a 63</p>
+<button class="start" onclick="iniciar()">Começar</button>
+
+<div id="cartela" class="cartela">
+    <h3 id="titulo"></h3>
+    <div id="numeros" class="numeros"></div>
+    <button class="sim" onclick="responder(true)">Sim</button>
+    <button class="nao" onclick="responder(false)">Não</button>
+</div>
+
+<div id="resultado"></div>
+<button class="reset" onclick="reiniciar()" style="display:none" id="btnReset">Jogar Novamente</button>
+
+<audio id="magicSound">
+    <source src="https://www.soundjay.com/misc/sounds/magic-chime-02.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let cartelas = [];
+let indice = 0;
+let soma = 0;
+
+function gerarCartelas() {
+    let cart = [[],[],[],[],[],[]];
+    for (let numero = 1; numero <= 63; numero++) {
+        for (let i = 0; i < 6; i++) {
+            if ((numero >> i) & 1) {
+                cart[i].push(numero);
+            }
+        }
+    }
+    return cart;
+}
+
+function iniciar() {
+    cartelas = gerarCartelas();
+    indice = 0;
+    soma = 0;
+    document.getElementById("resultado").innerHTML = "";
+    document.getElementById("btnReset").style.display = "none";
+    mostrarCartela();
+}
+
+function mostrarCartela() {
+    if (indice >= 6) {
+        revelarNumero();
+        return;
+    }
+
+    document.getElementById("cartela").style.display = "block";
+    document.getElementById("titulo").innerText = "Cartela " + (indice + 1);
+
+    let divNumeros = document.getElementById("numeros");
+    divNumeros.innerHTML = "";
+
+    cartelas[indice].forEach(num => {
+        let span = document.createElement("div");
+        span.innerText = num;
+        divNumeros.appendChild(span);
+    });
+}
+
+function responder(sim) {
+    if (sim) {
+        soma += Math.pow(2, indice);
+    }
+    indice++;
+    mostrarCartela();
+}
+
+function revelarNumero() {
+    document.getElementById("cartela").style.display = "none";
+    let resultadoDiv = document.getElementById("resultado");
+    resultadoDiv.classList.add("magic");
+
+    let contador = 0;
+    let intervalo = setInterval(() => {
+        resultadoDiv.innerHTML = "🔮 Revelando... " + contador;
+        contador++;
+        if (contador > soma) {
+            clearInterval(intervalo);
+            document.getElementById("magicSound").play();
+            resultadoDiv.innerHTML = "✨ O número que você pensou foi: " + soma;
+            document.getElementById("btnReset").style.display = "inline-block";
+        }
+    }, 40);
+}
+
+function reiniciar() {
+    document.getElementById("cartela").style.display = "none";
+    document.getElementById("resultado").innerHTML = "";
+    document.getElementById("btnReset").style.display = "none";
+}
+</script>
+
+</body>
+</html>
